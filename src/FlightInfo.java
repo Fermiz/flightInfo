@@ -241,8 +241,68 @@ public class FlightInfo {
 
         String filename = aim + date.substring(date.indexOf(".")).replace(".","");
 
+        String stop = "";
+
+        String stopover = "";
+
+        switch (flight) {
+            case "3U8945":
+                stop += "CAN";
+                stopover += "GUANGZHOU";
+                break;
+            case "3U8947":
+                stop += "PVG";
+                stopover += "SHANGHAI";
+                break;
+            case "3U8631":
+                stop += "HGH";
+                stopover += "HANGZHOU";
+                break;
+            case "3U8699":
+                stop += "TNA";
+                stopover += "JINAN";
+                break;
+            case "3U8579":
+                stop += "SHE";
+                stopover += "SHENYANG";
+                break;
+            case "3U8501":
+                stop += "CGO";
+                stopover += "ZHENGZHOU";
+                break;
+            case "3U8719":
+                stop += "LXA";
+                stopover += "LHASHA";
+                break;
+            case "3U8946":
+                stop += "INC";
+                stopover += "YINCHUAN";
+                break;
+        }
+
         //模板变量初始化
+        InputStream is = null;
         Map<String, Object> params = new HashMap<String, Object>();
+
+        if (stop == ""){
+            //普通模板
+            try {
+                is = new FileInputStream("./template/template.docx");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }else {
+            //经停模板
+            try {
+                is = new FileInputStream("./template/templateStop.docx");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            params.put("stop", stop);
+            params.put("stopover", stopover);
+        }
+
+        //模板变量
         params.put("airplane", airplane);
         params.put("flight", flight);
         params.put("date", date);
@@ -252,12 +312,6 @@ public class FlightInfo {
         params.put("titles", titles);
         params.put("crews", crews);
 
-        InputStream is = null;
-        try {
-            is = new FileInputStream("./template/template.docx");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
         XWPFDocument doc = null;
         try {
             doc = new XWPFDocument(is);
