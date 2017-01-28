@@ -17,7 +17,14 @@ import static org.apache.poi.xssf.usermodel.XSSFFont.DEFAULT_FONT_SIZE;
  */
 public class FlightInfo {
 
-
+    public static void main(String[] args){
+        FlightInfo info = new FlightInfo();
+        try {
+            info.printInfo();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 用一个docx文档作为模板，然后替换其中的内容，再写入目标文档中。
@@ -26,121 +33,221 @@ public class FlightInfo {
 
     public void printInfo() throws Exception {
 
-        InputStream xis = new FileInputStream("./data/data.xls");
-        HSSFWorkbook wbs = new HSSFWorkbook(xis);
+        short totalCell = 7;//机组人数在第8格 - 1
 
-        HSSFSheet sheet = wbs.getSheetAt(0);
+        short airplaneCell = 5;//飞机编号在第6格 - 1
 
-        int infoRow = 4;//关键信息栏行数 - 1
+        short dateCell = 8;//日期在第9格 - 1
 
-        short totalCell = 7;//机组人数在第几格 - 1
+        short crewCell = 2;//全体成员名字在第3格 - 1
 
-        short airplaneCell = 5;//飞机编号在第几格 - 1
+        short titleCell = 7;//全体成员职称在第8格 - 1
 
-        short dateCell = 8;//日期在第几格 - 1
+        short flightCell = 1;//航班号在第2格 - 1
 
-        short crewCell = 2;//全体成员在第几格 - 1
+        short arrivalCell = 4;//航班号在第5格 - 1
 
-        short titleCell = 7;//全体成员职称8在第几格 - 1
+        int infoRow = 4;//关键信息栏行数5 - 1
 
-        int crewstart = 6;//机组信息7栏行数 - 1
+        int crewstart = 6;//机组信息栏行数7 - 1
 
-        int crewend = 1;//机组信息栏2后面行数 - 1
+        int crewend = 1;//机组信息栏后面行数2 - 1
 
         int pilotNum = 0;
 
-        int totalNum = Integer.parseInt(sheet.getRow(infoRow).getCell(totalCell).toString());
+        String path = "./data/";
 
-        String airplane =  sheet.getRow(infoRow).getCell(airplaneCell).toString().replace("\n","/");
+        File file = new File(path);
 
-        String date =  sheet.getRow(infoRow).getCell(dateCell).toString();
+        File[] files = file.listFiles();
 
-        StringBuilder crewBuilder = new StringBuilder();
+        for(int i=0; i<files.length; i++) {
 
-        String titles = "";
+            if (files[i].isFile()) {
 
-        for (int i = crewstart; i < sheet.getLastRowNum() - crewend; i++ ) {
-            HSSFRow row = sheet.getRow(i);
+                String filename = files[i].getName();
 
-            HSSFCell theCrewCell = row.getCell(crewCell);
-            String crew = theCrewCell.toString().toUpperCase().replace("/"," ");
-            crewBuilder.append(crew.concat("\n"));
+                //String filename = name.substring(name.indexOf(" ") + 1, name.indexOf(".XLS"));
 
-            HSSFCell theTitleCell = row.getCell(titleCell);
-            String title = theTitleCell.toString().toUpperCase();
+                InputStream xis = new FileInputStream(path + filename);
+                HSSFWorkbook wbs = new HSSFWorkbook(xis);
 
-            if ( title.contains("CAPT") ){
+                HSSFSheet sheet = wbs.getSheetAt(0);
 
-                pilotNum ++;
+                int totalNum = Integer.parseInt(sheet.getRow(infoRow).getCell(totalCell).toString());
 
-                if( !titles.contains("CAP")){
-                    titles += "CAP\n";
-                }else{
-                    titles += "\n" ;
+                String[] aimArray = sheet.getRow(infoRow).getCell(arrivalCell).toString().split("\n");
+
+                String aim = aimArray[1].substring(aimArray[1].lastIndexOf("(") + 1, aimArray[1].lastIndexOf(")"));
+
+                String arrival = "";
+
+                switch (aim) {
+                    case "BKK":
+                        arrival += "BANGKOK,THAILAND";
+                        break;
+                    case "CJU":
+                        arrival += "CHEJU,KOREA";
+                        break;
+                    case "CXR":
+                        arrival += "NHA TRANG,VIETNAM";
+                        break;
+                    case "HKG":
+                        arrival += "HONGKONG";
+                        break;
+                    case "HKT":
+                        arrival += "PHUKET,THAILAND";
+                        break;
+                    case "ICN":
+                        arrival += "SEOUL,KOREA";
+                        break;
+                    case "KBV":
+                        arrival += "KRABI,THAILAND";
+                        break;
+                    case "KIX":
+                        arrival += "OSAKA,JAPAN";
+                        break;
+                    case "NRT":
+                        arrival += "NARITA,JAPAN";
+                        break;
+                    case "PRG":
+                        arrival += "PRAGUE,CZECH";
+                        break;
+                    case "SIN":
+                        arrival += "SINGAPORE";
+                        break;
+                    case "SVO":
+                        arrival += "MOSCOW,RUSSIA";
+                        break;
+                    case "TSA":
+                        arrival += "TAIPEISONGSHAN";
+                        break;
+                    case "DXB":
+                        arrival += "DUBAI,UNITEDARABEMIRATES";
+                        break;
+                    case "MEL":
+                        arrival += "MELBOURNE,AUSTRIALIA";
+                        break;
+                    case "CNX":
+                        arrival += "CHIANGMAI,THAILAND";
+                        break;
                 }
 
-            }else if( title.contains("F/O") ){
+                String flight = sheet.getRow(infoRow).getCell(flightCell).toString();
 
-                pilotNum ++;
+                String airplane = sheet.getRow(infoRow).getCell(airplaneCell).toString().replace("\n", "/");
 
-                if( !titles.contains("F/O")){
-                    titles += "F/O\n";
-                }else{
-                    titles += "\n";
+                String date = sheet.getRow(infoRow).getCell(dateCell).toString();
+
+                StringBuilder crewBuilder = new StringBuilder();
+
+                String titles = "";
+
+                for (int j = crewstart; j < sheet.getLastRowNum() - crewend; j++) {
+
+                    HSSFRow row = sheet.getRow(j);
+                    HSSFCell theCrewCell = row.getCell(crewCell);
+                    String crew = theCrewCell.toString().toUpperCase().replace("/", " ");
+                    crewBuilder.append(crew.concat("\n"));
+
+                    HSSFCell theTitleCell = row.getCell(titleCell);
+                    String title = theTitleCell.toString().toUpperCase();
+
+                    //System.out.println(title);
+
+                    if (title.contains("CAPT")) {
+
+                        pilotNum++;
+
+                        if (!titles.contains("CAP")) {
+                            titles += "CAP\n";
+                        } else {
+                            titles += "\n";
+                        }
+
+                    } else if (title.contains("F/O")) {
+
+                        pilotNum++;
+
+                        if (!titles.contains("F/O")) {
+                            titles += "F/O\n";
+                        } else {
+                            titles += "\n";
+                        }
+
+                    } else if (title.contains("PS")) {
+
+                        if (!titles.contains("F/P")) {
+                            titles += "F/P\n";
+                        } else {
+                            titles += "\n";
+                        }
+
+                    } else if (title.contains("D/H")) {
+
+                        if (!titles.contains("D/H")) {
+                            titles += "D/H\n";
+                        } else {
+                            titles += "\n";
+                        }
+
+                    } else if (title.contains("SECU")) {
+
+                        if (!titles.contains("SEC")) {
+                            titles += "SEC\n";
+                        } else {
+                            titles += "\n";
+                        }
+
+                    }else {
+
+                        if (!titles.contains("STW")) {
+                            titles += "STW\n";
+                        } else {
+                            titles += "\n";
+                        }
+
+                    }
+
                 }
 
-            }else if(title.contains("F/P") ){
+                String count = String.valueOf(pilotNum).concat("/").concat(String.valueOf(totalNum - pilotNum));
 
-                if( !titles.contains("F/P")){
-                    titles += "F/P\n";
-                }else{
-                    titles += "\n";
+                pilotNum = 0;
+
+                String crews = crewBuilder.toString();
+
+                try {
+                    xis.close();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
 
-            }else if(title.contains("STW") ){
-
-                if( !titles.contains("STW")){
-                    titles += "STW\n";
-                }else{
-                    titles += "\n";
-                }
+                this.writeToDoc(airplane, flight, date, aim, arrival, count, titles, crews);
 
             }else {
-                if( !titles.contains("SEC")){
-                    titles += "SEC\n";
-                }else{
-                    titles += "\n";
-                }
+                System.out.println("请将.xls拷贝到data目录");
             }
-
         }
-
-        String count = String.valueOf(pilotNum).concat("/").concat(String.valueOf(totalNum - pilotNum));
-
-        String crews =  crewBuilder.toString();
-
-        //System.out.println(titles);
-
-        try {
-            xis.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        this.writeToDoc(airplane,date,count,titles,crews);
 
     }
 
     /**
      * 输出到docx文档
-     * @param airplane,date,count,titles,crews
+     * @param airplane,date,ap,count,titles,crews
      */
-    private void writeToDoc(String airplane, String date, String count, String titles,String crews) {
+    private void writeToDoc(String airplane, String flight, String date,  String aim, String arrival, String count, String titles, String crews) {
+
+        String filename = aim + date.substring(date.indexOf(".")).replace(".","");
+
         //模板变量初始化
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("airplane", airplane);
+        params.put("flight", flight);
         params.put("date", date);
+        params.put("aim", aim);
+        params.put("arrival", arrival);
         params.put("count", count);
         params.put("titles", titles);
         params.put("crews", crews);
@@ -158,12 +265,12 @@ public class FlightInfo {
             e.printStackTrace();
         }
         //替换段落里面的变量
-        this.replaceInDoc(doc, params);
+        //this.replaceInDoc(doc, params);
         //替换表格里面的变量
         this.replaceInTable(doc, params);
         OutputStream os = null;
         try {
-            os = new FileOutputStream("./result/output.docx");
+            os = new FileOutputStream("./result/" + filename + ".docx");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -180,7 +287,7 @@ public class FlightInfo {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.print("succeed!!");
+        System.out.println("finished~");
     }
 
     /**
@@ -209,6 +316,33 @@ public class FlightInfo {
     }
 
     /**
+     * 替换表格里面的变量
+     * @param doc 要替换的文档
+     * @param params 参数
+     */
+    private void replaceInTable(XWPFDocument doc, Map<String, Object> params) {
+        Iterator<XWPFTable> iterator = doc.getTablesIterator();
+        XWPFTable table;
+        List<XWPFTableRow> rows;
+        List<XWPFTableCell> cells;
+        List<XWPFParagraph> paras;
+        while (iterator.hasNext()) {
+            table = iterator.next();
+            rows = table.getRows();
+            for (XWPFTableRow row : rows) {
+                cells = row.getTableCells();
+                for (XWPFTableCell cell : cells) {
+                    paras = cell.getParagraphs();
+                    for (XWPFParagraph para : paras) {
+                        this.replaceInPara(para, params);
+                    }
+                }
+            }
+        }
+    }
+
+
+    /**
      * 替换段落里面的变量
      * @param para 要替换的段落
      * @param params 参数
@@ -222,6 +356,7 @@ public class FlightInfo {
                 XWPFRun run = runs.get(i);
                 int runFontSize = run.getFontSize();
                 String runText = run.toString();
+                //System.out.println(runText+" |");
                 String runColor = run.getColor();
                 String runFontFamily = run.getFontFamily();
                 Boolean runItalic = run.isItalic();
@@ -264,38 +399,4 @@ public class FlightInfo {
         }
     }
 
-    /**
-     * 替换表格里面的变量
-     * @param doc 要替换的文档
-     * @param params 参数
-     */
-    private void replaceInTable(XWPFDocument doc, Map<String, Object> params) {
-        Iterator<XWPFTable> iterator = doc.getTablesIterator();
-        XWPFTable table;
-        List<XWPFTableRow> rows;
-        List<XWPFTableCell> cells;
-        List<XWPFParagraph> paras;
-        while (iterator.hasNext()) {
-            table = iterator.next();
-            rows = table.getRows();
-            for (XWPFTableRow row : rows) {
-                cells = row.getTableCells();
-                for (XWPFTableCell cell : cells) {
-                    paras = cell.getParagraphs();
-                    for (XWPFParagraph para : paras) {
-                        this.replaceInPara(para, params);
-                    }
-                }
-            }
-        }
-    }
-
-    public static void main(String[] args){
-        FlightInfo info = new FlightInfo();
-        try {
-            info.printInfo();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
