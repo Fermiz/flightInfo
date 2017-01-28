@@ -131,6 +131,18 @@ public class FlightInfo {
                     case "CNX":
                         arrival += "CHIANGMAI,THAILAND";
                         break;
+                    case "SPN":
+                        arrival += "SAIPAN,AMERICA";
+                        break;
+                    case "LAX":
+                        arrival += "LOSANGELES,AMERICA";
+                        break;
+                    case "YVR":
+                        arrival += "VANCOUVER,CANADA";
+                        break;
+                    case "KTM":
+                        arrival += "KATHMANDU,NEPAL";
+                        break;
                 }
 
                 String flight = sheet.getRow(infoRow).getCell(flightCell).toString();
@@ -246,7 +258,7 @@ public class FlightInfo {
         String stopover = "";
 
         switch (flight) {
-            case "3U8945":
+            case "3U8645":
                 stop += "CAN";
                 stopover += "GUANGZHOU";
                 break;
@@ -274,7 +286,7 @@ public class FlightInfo {
                 stop += "LXA";
                 stopover += "LHASHA";
                 break;
-            case "3U8946":
+            case "3U8945":
                 stop += "INC";
                 stopover += "YINCHUAN";
                 break;
