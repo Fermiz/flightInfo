@@ -51,8 +51,6 @@ public class FlightInfo {
 
         int crewstart = 6;//机组信息栏行数7 - 1
 
-        int crewend = 1;//机组信息栏后面行数2 - 1
-
         int pilotNum = 0;
 
         String path = "./data/";
@@ -66,6 +64,8 @@ public class FlightInfo {
             if (files[i].isFile()) {
 
                 String filename = files[i].getName();
+
+                //System.out.println(filename);
 
                 //String filename = name.substring(name.indexOf(" ") + 1, name.indexOf(".XLS"));
 
@@ -145,7 +145,11 @@ public class FlightInfo {
                         break;
                 }
 
-                String flight = sheet.getRow(infoRow).getCell(flightCell).toString();
+                String flight = sheet.getRow(infoRow).getCell(flightCell).toString().toUpperCase();
+
+                if (flight.contains("/")){
+                    flight = flight.substring(0,flight.indexOf("/"));
+                }
 
                 String airplane = sheet.getRow(infoRow).getCell(airplaneCell).toString().replace("\n", "/");
 
@@ -155,7 +159,9 @@ public class FlightInfo {
 
                 String titles = "";
 
-                for (int j = crewstart; j < sheet.getLastRowNum() - crewend; j++) {
+                int crewend = crewstart + totalNum;
+
+                for (int j = crewstart; j <  crewend; j++) {
 
                     HSSFRow row = sheet.getRow(j);
                     HSSFCell theCrewCell = row.getCell(crewCell);
@@ -183,6 +189,16 @@ public class FlightInfo {
 
                         if (!titles.contains("F/O")) {
                             titles += "F/O\n";
+                        } else {
+                            titles += "\n";
+                        }
+
+                    }  else if (title.contains("F/C")) {
+
+                        pilotNum++;
+
+                        if (!titles.contains("F/C")) {
+                            titles += "F/C\n";
                         } else {
                             titles += "\n";
                         }
@@ -262,7 +278,7 @@ public class FlightInfo {
                 stop += "CAN";
                 stopover += "GUANGZHOU";
                 break;
-            case "3U8947":
+            case "3U8647":
                 stop += "PVG";
                 stopover += "SHANGHAI";
                 break;
@@ -353,7 +369,7 @@ public class FlightInfo {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("finished~");
+        System.out.println(flight + " finished~");
     }
 
     /**
