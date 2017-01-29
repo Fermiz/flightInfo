@@ -27,7 +27,7 @@ public class FlightInfo {
     }
 
     /**
-     * 用一个docx文档作为模板，然后替换其中的内容，再写入目标文档中。
+     * 用一个docx文档作为模板，读取data下的.xls文件，然后替换其中的内容，再写入目标文档中。
      * @throws Exception
      */
 
